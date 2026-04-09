@@ -11,7 +11,7 @@ You can find instructions [here](https://developer.android.com/studio/debug/dev-
 
 ## Installation
 
-**Windows** installers are available in [Releases](https://github.com/jcbyte/backPhoto/releases).
+**Windows** installers are available in [Releases](https://github.com/jcbyte/back-photo/releases).
 
 > Other operating systems are supported (however untested) and should be compiled from source.
 
