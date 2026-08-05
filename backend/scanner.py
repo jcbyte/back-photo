@@ -1,5 +1,6 @@
 import os
 import shutil
+import stat
 from pathlib import Path, PurePosixPath
 from typing import Generator
 
@@ -154,6 +155,9 @@ def scan_local_folder(location: Path, source: Path, config: UserConfig) -> Gener
             move2(str(file_path), str(resolved_destination))
         else:
             shutil.copy2(file_path, resolved_destination)
+
+        # Copies retain Windows attributes; staging files must remain editable and removable.
+        os.chmod(resolved_destination, stat.S_IWRITE)
 
         if file_path.name != resolved_destination.name:
             yield BackupYield(log=LogEntry(content=f"Renamed {file_path.name} to {resolved_destination.name}"))

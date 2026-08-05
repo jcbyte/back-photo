@@ -2,6 +2,7 @@ import asyncio
 import json
 import os
 import shutil
+import stat
 import time
 from contextlib import asynccontextmanager
 from pathlib import Path
@@ -206,7 +207,16 @@ async def backup(jobId: str = Query("", description="ID given from `/backup/star
         # Remove temporary files if required
         if backup_data.config.removeTempFiles:
             yield format_yield(BackupYield(log=LogEntry(content="Removing temporary files..."), progress=0), progress_ranges["removeTemp"])
-            shutil.rmtree(folder_path)
+            try:
+                def remove_readonly(func, path, _exc_info):
+                    """Make a read-only Windows path writable, then retry its removal."""
+                    os.chmod(path, stat.S_IWRITE)
+                    func(path)
+
+                shutil.rmtree(folder_path, onerror=remove_readonly)
+            except Exception as e:
+                yield yield_error(e)
+                return
             yield format_yield(BackupYield(log=LogEntry(content="Temporary files removed"), progress=1), progress_ranges["removeTemp"])
 
         yield format_yield(BackupYield(log=LogEntry(content="Complete!", type="success"), progress=1))
