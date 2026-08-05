@@ -81,7 +81,8 @@ export default function Home({
 	}
 
 	const selectedDeviceIsAuthorised = devices.find((device) => device.serial === userConfig.adbDevice)?.authorised;
-	const sameLocalFolders = userConfig.sourcePath.trim().toLowerCase() === userConfig.destinationPath.trim().toLowerCase();
+	const sameLocalFolders =
+		userConfig.sourcePath.trim().toLowerCase() === userConfig.destinationPath.trim().toLowerCase();
 	const validSource =
 		sourceType === "phone" ? selectedDeviceIsAuthorised : userConfig.sourcePath.trim() && !sameLocalFolders;
 
@@ -172,7 +173,7 @@ export default function Home({
 											<div className="flex gap-2">
 												<Input
 													className="flex-1"
-													placeholder="D:\\Unsorted Photos"
+													placeholder="C:\Photos\Unsorted"
 													value={userConfig.sourcePath}
 													onChange={(event) => updateUserConfig({ sourcePath: event.target.value })}
 													disabled={isRunning}
