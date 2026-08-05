@@ -1,0 +1,7 @@
+fastapi
+pydantic
+uvicorn
+pillow
+piexif
+pure-python-adb==0.3.0.dev0
+pyinstaller

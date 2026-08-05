@@ -146,7 +146,12 @@ def scan_local_folder(location: Path, source: Path, config: UserConfig) -> Gener
             names = [name for name in names if not name.startswith(".")]
 
         yield BackupYield(log=LogEntry(content=f"Scanning {root}"))
-        files.extend(Path(root, name) for name in names if Path(name).suffix.lower() in config.fileTypes)
+
+        root_path = Path(root)
+        for name in names:
+            file_path = root_path / name
+            if file_path.suffix.lower() in config.fileTypes:
+                files.append(file_path)
 
     total = len(files)
     for index, file_path in enumerate(files):
@@ -156,7 +161,7 @@ def scan_local_folder(location: Path, source: Path, config: UserConfig) -> Gener
         else:
             shutil.copy2(file_path, resolved_destination)
 
-        # Copies retain Windows attributes; staging files must remain editable and removable.
+        # Copies retain Windows attributes; staging files must be editable and removable
         os.chmod(resolved_destination, stat.S_IWRITE)
 
         if file_path.name != resolved_destination.name:
