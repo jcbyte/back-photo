@@ -140,7 +140,7 @@ export default function App() {
 				)}
 			</div>
 
-			<Toaster position="top-center" />
+			<Toaster position="top-center" theme={theme} />
 		</>
 	);
 }
