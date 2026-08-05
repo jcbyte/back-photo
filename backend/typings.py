@@ -5,6 +5,7 @@ from pydantic import BaseModel
 
 class UserConfig(BaseModel):
     adbDevice: str | None = None
+    sourcePath: str
     destinationPath: str
     ignoredDirs: list[str]
     fileTypes: list[str]

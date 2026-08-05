@@ -41,7 +41,6 @@ export default function Home({
 
 	const [refreshingDevices, setRefreshingDevices] = useState<boolean>(false);
 	const [sourceType, setSourceType] = useState<"phone" | "folder">("phone");
-	const [sourcePath, setSourcePath] = useState("");
 
 	async function handleRefreshDevices() {
 		if (isRunning) return;
@@ -62,7 +61,7 @@ export default function Home({
 		const folderPath = await electronApi.pickFolder();
 		if (!folderPath) return;
 
-		setSourcePath(folderPath);
+		updateUserConfig({ sourcePath: folderPath });
 	}
 
 	useEffect(() => {
@@ -82,8 +81,9 @@ export default function Home({
 	}
 
 	const selectedDeviceIsAuthorised = devices.find((device) => device.serial === userConfig.adbDevice)?.authorised;
-	const sameLocalFolders = sourcePath.trim().toLowerCase() === userConfig.destinationPath.trim().toLowerCase();
-	const validSource = sourceType === "phone" ? selectedDeviceIsAuthorised : sourcePath.trim() && !sameLocalFolders;
+	const sameLocalFolders = userConfig.sourcePath.trim().toLowerCase() === userConfig.destinationPath.trim().toLowerCase();
+	const validSource =
+		sourceType === "phone" ? selectedDeviceIsAuthorised : userConfig.sourcePath.trim() && !sameLocalFolders;
 
 	return (
 		<div className="container mx-auto p-6 flex flex-col gap-4">
@@ -173,15 +173,15 @@ export default function Home({
 												<Input
 													className="flex-1"
 													placeholder="D:\\Unsorted Photos"
-													value={sourcePath}
-													onChange={(event) => setSourcePath(event.target.value)}
+													value={userConfig.sourcePath}
+													onChange={(event) => updateUserConfig({ sourcePath: event.target.value })}
 													disabled={isRunning}
 												/>
 												<Button variant="outline" size="icon" onClick={selectSourceFolder} disabled={isRunning}>
 													<FolderOpen className="h-4 w-4" />
 												</Button>
 											</div>
-											{sameLocalFolders && sourcePath.trim() && (
+											{sameLocalFolders && userConfig.sourcePath.trim() && (
 												<span className="text-sm text-destructive">Source and destination must be different.</span>
 											)}
 										</TabsContent>
@@ -208,7 +208,7 @@ export default function Home({
 									disabled={!validSource || !userConfig.destinationPath.trim() || isRunning}
 									className="w-full"
 									size="lg"
-									onClick={() => backup(sourceType === "folder" ? sourcePath : undefined)}
+									onClick={() => backup(sourceType === "folder" ? userConfig.sourcePath : undefined)}
 								>
 									{isRunning ? <LoaderCircleIcon className="h-4 w-4 animate-spin" /> : <Play className="h-4 w-4" />}
 									Back Up

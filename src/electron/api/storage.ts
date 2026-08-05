@@ -3,6 +3,7 @@ import Store from "electron-store";
 
 export interface UserConfig {
 	adbDevice?: string;
+	sourcePath: string;
 	destinationPath: string;
 	ignoredDirs: string[];
 	fileTypes: string[];
@@ -12,6 +13,7 @@ export interface UserConfig {
 	removeTempFiles: boolean;
 }
 const DEFAULT_USER_CONFIG: UserConfig = {
+	sourcePath: "",
 	destinationPath: "",
 	ignoredDirs: ["/sdcard/Android", "/sdcard/storage"],
 	fileTypes: [".jpg", ".jpeg", ".webp", ".png", ".mp4"],
@@ -33,7 +35,7 @@ const store = new Store<StoreSchema>({
 
 export function getUserConfig(): UserConfig {
 	const config = store.get("userConfig", DEFAULT_USER_CONFIG);
-	return config;
+	return { ...DEFAULT_USER_CONFIG, ...config };
 }
 
 ipcMain.handle("storage.getConfig", () => {
@@ -42,7 +44,7 @@ ipcMain.handle("storage.getConfig", () => {
 
 ipcMain.handle("storage.updateConfig", (_event, updates: Partial<UserConfig>) => {
 	const currentConfig = store.get("userConfig");
-	const updatedConfig = { ...currentConfig, ...updates };
+	const updatedConfig = { ...DEFAULT_USER_CONFIG, ...currentConfig, ...updates };
 
 	store.set("userConfig", updatedConfig);
 
