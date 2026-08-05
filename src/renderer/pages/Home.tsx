@@ -105,72 +105,85 @@ export default function Home({
 								<div className="flex flex-col gap-2">
 									<Tabs value={sourceType} onValueChange={(value) => setSourceType(value as "phone" | "folder")}>
 										<TabsList className="grid w-full grid-cols-2">
-											<TabsTrigger value="phone" disabled={isRunning}><SmartphoneIcon /> Phone</TabsTrigger>
-											<TabsTrigger value="folder" disabled={isRunning}><FolderIcon /> PC Folder</TabsTrigger>
+											<TabsTrigger value="phone" disabled={isRunning}>
+												<SmartphoneIcon /> Phone
+											</TabsTrigger>
+											<TabsTrigger value="folder" disabled={isRunning}>
+												<FolderIcon /> PC Folder
+											</TabsTrigger>
 										</TabsList>
 
 										<TabsContent value="phone" className="flex flex-col">
-										<label className="text-sm font-semibold">Phone Device</label>
-										<div className="flex gap-2">
-										<Select
-											value={userConfig.adbDevice}
-											onValueChange={(selected) => updateUserConfig({ adbDevice: selected })}
-											disabled={isRunning}
-										>
-											<SelectTrigger className="flex-1">
-												<SelectValue placeholder={"Select device"} />
-											</SelectTrigger>
-											<SelectContent>
-												{devices.map((device) => (
-													<SelectItem key={device.serial} value={device.serial} disabled={!device.authorised}>
-														<div className="flex items-center gap-2">
-															{device.authorised ? (
-																<CircleCheckIcon className="h-4 w-4 text-success" />
-															) : (
-																<CircleAlertIcon className="h-4 w-4 text-warning" />
-															)}
-															<span>{device.authorised ? device.name : device.serial}</span>
-														</div>
-													</SelectItem>
-												))}
-												{userConfig.adbDevice && !devices.some((device) => device.serial === userConfig.adbDevice) ? (
-													<SelectItem value={userConfig.adbDevice} disabled>
-														<div className="flex items-center gap-2">
-															<CircleAlertIcon className="h-4 w-4 text-muted-foreground" />
-															<span className="text-muted-foreground">{userConfig.adbDevice}</span>
-														</div>
-													</SelectItem>
-												) : (
-													devices.length === 0 && (
-														<SelectItem value="no-device" disabled>
-															<div className="flex items-center gap-2">
-																<span>No devices connected</span>
-															</div>
-														</SelectItem>
-													)
-												)}
-											</SelectContent>
-										</Select>
-										<Button
-											variant="outline"
-											size="icon"
-											onClick={handleRefreshDevices}
-											disabled={isRunning || refreshingDevices}
-										>
-											<RefreshCw className={`h-4 w-4 ${refreshingDevices && "animate-spin"}`} />
-										</Button>
-										</div>
+											<label className="text-sm font-semibold">Device</label>
+											<div className="flex gap-2">
+												<Select
+													value={userConfig.adbDevice}
+													onValueChange={(selected) => updateUserConfig({ adbDevice: selected })}
+													disabled={isRunning}
+												>
+													<SelectTrigger className="flex-1">
+														<SelectValue placeholder={"Select device"} />
+													</SelectTrigger>
+													<SelectContent>
+														{devices.map((device) => (
+															<SelectItem key={device.serial} value={device.serial} disabled={!device.authorised}>
+																<div className="flex items-center gap-2">
+																	{device.authorised ? (
+																		<CircleCheckIcon className="h-4 w-4 text-success" />
+																	) : (
+																		<CircleAlertIcon className="h-4 w-4 text-warning" />
+																	)}
+																	<span>{device.authorised ? device.name : device.serial}</span>
+																</div>
+															</SelectItem>
+														))}
+														{userConfig.adbDevice &&
+														!devices.some((device) => device.serial === userConfig.adbDevice) ? (
+															<SelectItem value={userConfig.adbDevice} disabled>
+																<div className="flex items-center gap-2">
+																	<CircleAlertIcon className="h-4 w-4 text-muted-foreground" />
+																	<span className="text-muted-foreground">{userConfig.adbDevice}</span>
+																</div>
+															</SelectItem>
+														) : (
+															devices.length === 0 && (
+																<SelectItem value="no-device" disabled>
+																	<div className="flex items-center gap-2">
+																		<span>No devices connected</span>
+																	</div>
+																</SelectItem>
+															)
+														)}
+													</SelectContent>
+												</Select>
+												<Button
+													variant="outline"
+													size="icon"
+													onClick={handleRefreshDevices}
+													disabled={isRunning || refreshingDevices}
+												>
+													<RefreshCw className={`h-4 w-4 ${refreshingDevices && "animate-spin"}`} />
+												</Button>
+											</div>
 										</TabsContent>
 
 										<TabsContent value="folder" className="flex flex-col">
 											<label className="text-sm font-semibold">Source Folder</label>
 											<div className="flex gap-2">
-												<Input className="flex-1" placeholder="D:\\Unsorted Photos" value={sourcePath} onChange={(event) => setSourcePath(event.target.value)} disabled={isRunning} />
+												<Input
+													className="flex-1"
+													placeholder="D:\\Unsorted Photos"
+													value={sourcePath}
+													onChange={(event) => setSourcePath(event.target.value)}
+													disabled={isRunning}
+												/>
 												<Button variant="outline" size="icon" onClick={selectSourceFolder} disabled={isRunning}>
 													<FolderOpen className="h-4 w-4" />
 												</Button>
 											</div>
-											{sameLocalFolders && sourcePath.trim() && <span className="text-sm text-destructive">Source and destination must be different.</span>}
+											{sameLocalFolders && sourcePath.trim() && (
+												<span className="text-sm text-destructive">Source and destination must be different.</span>
+											)}
 										</TabsContent>
 									</Tabs>
 
@@ -192,11 +205,7 @@ export default function Home({
 								</div>
 
 								<Button
-									disabled={
-										!validSource ||
-										!userConfig.destinationPath.trim() ||
-										isRunning
-									}
+									disabled={!validSource || !userConfig.destinationPath.trim() || isRunning}
 									className="w-full"
 									size="lg"
 									onClick={() => backup(sourceType === "folder" ? sourcePath : undefined)}
