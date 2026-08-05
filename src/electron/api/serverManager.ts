@@ -14,7 +14,7 @@ let pyPort: number | null = null;
 let adbPort: number | null = null;
 
 export function getBackendHost(): string | null {
-	if (!adbPort) return null;
+	if (!pyPort) return null;
 	return `http://127.0.0.1:${pyPort}`;
 }
 
