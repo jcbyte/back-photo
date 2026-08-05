@@ -40,7 +40,7 @@ export default function Options() {
 	}
 
 	function toExt(ext: string): string {
-		let e = ext.trim();
+		let e = ext.trim().toLowerCase();
 		if (!e.startsWith(".")) e = "." + e; // ensure leading dot
 		return e;
 	}
