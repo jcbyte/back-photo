@@ -3,7 +3,7 @@
 	"productName": "BackPhoto",
 	"version": "3.1.0",
 	"description": "Application for backing up photos from your Android Device.",
-	"homepage": "https://github.com/jcbyte/BackPhoto",
+	"homepage": "https://github.com/jcbyte/back-photo",
 	"main": ".vite/build/main.js",
 	"scripts": {
 		"build:server": "pyinstaller --onefile --name server --distpath dist/backend backend/server.py",

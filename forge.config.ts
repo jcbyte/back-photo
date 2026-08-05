@@ -17,7 +17,7 @@ const config: ForgeConfig = {
 	makers: [
 		new MakerSquirrel({
 			setupIcon: "./assets/icon.ico",
-			iconUrl: "https://raw.githubusercontent.com/jcbyte/BackPhoto/refs/heads/main/assets/icon.ico",
+			iconUrl: "https://raw.githubusercontent.com/jcbyte/back-photo/refs/heads/main/assets/icon.ico",
 		}),
 		new MakerZIP({}, ["darwin"]), // ! Untested on macos
 		new MakerDeb({
@@ -53,7 +53,7 @@ const config: ForgeConfig = {
 			config: {
 				repository: {
 					owner: "jcbyte",
-					name: "BackPhoto",
+					name: "back-photo",
 				},
 				draft: false,
 				prerelease: false,
