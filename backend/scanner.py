@@ -122,3 +122,39 @@ def scan_device(location: Path, adb: ADB, config: UserConfig) -> Generator[Backu
             raise Exception("ADB device was disconnected")
         else:
             raise HTTPException(status_code=ADB_NO_CONNECTION, detail="Could not connect to ADB server")
+
+
+def scan_local_folder(location: Path, source: Path, config: UserConfig) -> Generator[BackupYield, None, None]:
+    """Scan a PC folder and copy/move its files based on the configuration given.
+
+    Args:
+        location (Path): The destination folder to place our copied/moved files into.
+        source (Path): The source PC folder.
+        config (UserConfig): The configuration to use when selecting ADB device and scanning.
+    """
+    if not source.exists() or not source.is_dir():
+        raise Exception("Source folder does not exist or is not a directory")
+
+    if source.resolve() == Path(config.destinationPath).resolve():
+        raise Exception("Source and destination folders must be different")
+
+    files: list[Path] = []
+    for root, dirs, names in os.walk(source):
+        if config.skipDot:
+            dirs[:] = [name for name in dirs if not name.startswith(".")]
+            names = [name for name in names if not name.startswith(".")]
+
+        yield BackupYield(log=LogEntry(content=f"Scanning {root}"))
+        files.extend(Path(root, name) for name in names if Path(name).suffix.lower() in config.fileTypes)
+
+    total = len(files)
+    for index, file_path in enumerate(files):
+        resolved_destination = get_resolved_path(location / file_path.name)
+        if config.moveFiles:
+            move2(str(file_path), str(resolved_destination))
+        else:
+            shutil.copy2(file_path, resolved_destination)
+
+        if file_path.name != resolved_destination.name:
+            yield BackupYield(log=LogEntry(content=f"Renamed {file_path.name} to {resolved_destination.name}"))
+        yield BackupYield(progress=(index + 1) / total if total else 1)

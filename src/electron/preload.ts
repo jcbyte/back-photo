@@ -27,13 +27,13 @@ contextBridge.exposeInMainWorld("storageApi", {
 contextBridge.exposeInMainWorld("backendApi", {
 	connectToADB: (): Promise<BackendResponse> => ipcRenderer.invoke("backend.connectToADB"),
 	getDevices: (): Promise<BackendResponse<AdbDevice[]>> => ipcRenderer.invoke("backend.getDevices"),
-	backup: (onUpdate?: (update: BackupStreamedResponse) => void): Promise<BackendResponse> => {
+	backup: (onUpdate?: (update: BackupStreamedResponse) => void, sourcePath?: string): Promise<BackendResponse> => {
 		ipcRenderer.removeAllListeners("backend.backup:update");
 		if (onUpdate) {
 			ipcRenderer.on("backend.backup:update", (_event, update: BackupStreamedResponse) => {
 				onUpdate(update);
 			});
 		}
-		return ipcRenderer.invoke("backend.backup");
+		return ipcRenderer.invoke("backend.backup", sourcePath);
 	},
 });

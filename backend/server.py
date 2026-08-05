@@ -23,6 +23,7 @@ DEV = os.getenv("DEV", "false").lower() == "true"
 
 class BackupData(BaseModel):
     config: UserConfig
+    sourcePath: str | None = None
 
 
 class AppState(BaseModel):
@@ -147,7 +148,7 @@ async def backup(jobId: str = Query("", description="ID given from `/backup/star
             return
 
         adb = state.adb
-        if adb is None:
+        if backup_data.sourcePath is None and adb is None:
             yield yield_error(HTTPException(status_code=ADB_NOT_INITIALISED, detail="ADB is not initialised"))
             return
 
@@ -165,15 +166,21 @@ async def backup(jobId: str = Query("", description="ID given from `/backup/star
             }
         )
 
-        # Find and move/copy all photos from ADB device to working folder
-        yield format_yield(BackupYield(log=LogEntry(content="Scanning device..."), progress=0), progress_ranges["scan"])
+        # Find and move/copy all photos into the working folder
+        source_description = "device" if backup_data.sourcePath is None else "source folder"
+        yield format_yield(BackupYield(log=LogEntry(content=f"Scanning {source_description}..."), progress=0), progress_ranges["scan"])
         try:
-            for y in scanner.scan_device(folder_path, adb, backup_data.config):
+            scan_results = (
+                scanner.scan_device(folder_path, adb, backup_data.config)
+                if backup_data.sourcePath is None
+                else scanner.scan_local_folder(folder_path, Path(backup_data.sourcePath), backup_data.config)
+            )
+            for y in scan_results:
                 yield format_yield(y, progress_ranges["scan"])
         except Exception as e:
             yield yield_error(e)
             return
-        yield format_yield(BackupYield(log=LogEntry(content="Device scan completed"), progress=1), progress_ranges["scan"])
+        yield format_yield(BackupYield(log=LogEntry(content=f"{source_description.title()} scan completed"), progress=1), progress_ranges["scan"])
 
         # Modify photo time in EXIF if required
         if backup_data.config.setExif:

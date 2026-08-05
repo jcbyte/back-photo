@@ -20,6 +20,6 @@ declare global {
 	namespace backendApi {
 		function connectToADB(): Promise<BackendResponse>;
 		function getDevices(): Promise<BackendResponse<AdbDevice[]>>;
-		function backup(onUpdate?: (update: BackupStreamedResponse) => void): Promise<BackendResponse>;
+		function backup(onUpdate?: (update: BackupStreamedResponse) => void, sourcePath?: string): Promise<BackendResponse>;
 	}
 }
