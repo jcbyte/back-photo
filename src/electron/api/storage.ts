@@ -21,7 +21,11 @@ const DEFAULT_USER_CONFIG: UserConfig = {
 	removeTempFiles: true,
 };
 
-const store = new Store<UserConfig>({
+interface StoreSchema {
+	userConfig: UserConfig;
+}
+
+const store = new Store<StoreSchema>({
 	defaults: {
 		userConfig: DEFAULT_USER_CONFIG,
 	},

@@ -1,5 +1,5 @@
 import { dialog, ipcMain } from "electron";
-import { isAppReady } from "../main";
+import { isAppReady } from "../runtime";
 
 ipcMain.handle("electron.pickFolder", async () => {
 	const result = await dialog.showOpenDialog({

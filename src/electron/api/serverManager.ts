@@ -3,7 +3,7 @@ import { ipcMain } from "electron";
 import getPort from "get-port";
 import path from "path";
 import treeKill from "tree-kill";
-import { DEV } from "../main";
+import { DEV } from "../runtime";
 
 const PYTHON_PATH = DEV ? "./backend/server.py" : path.join(process.resourcesPath, "dist", "backend", "server");
 const ADB_PATH = DEV ? "./dist/adb/adb" : path.join(process.resourcesPath, "dist", "adb", "adb");

@@ -3,12 +3,9 @@ import { MakerSquirrel } from "@electron-forge/maker-squirrel";
 import { MakerZIP } from "@electron-forge/maker-zip";
 import { AutoUnpackNativesPlugin } from "@electron-forge/plugin-auto-unpack-natives";
 import { FusesPlugin } from "@electron-forge/plugin-fuses";
-import { WebpackPlugin } from "@electron-forge/plugin-webpack";
+import { VitePlugin } from "@electron-forge/plugin-vite";
 import type { ForgeConfig } from "@electron-forge/shared-types";
 import { FuseV1Options, FuseVersion } from "@electron/fuses";
-
-import { mainConfig } from "./webpack.main.config";
-import { rendererConfig } from "./webpack.renderer.config";
 
 const config: ForgeConfig = {
 	packagerConfig: {
@@ -31,21 +28,12 @@ const config: ForgeConfig = {
 	],
 	plugins: [
 		new AutoUnpackNativesPlugin({}),
-		new WebpackPlugin({
-			mainConfig,
-			renderer: {
-				config: rendererConfig,
-				entryPoints: [
-					{
-						html: "./src/renderer/index.html",
-						js: "./src/renderer/renderer.tsx",
-						name: "main_window",
-						preload: {
-							js: "./src/electron/preload.ts",
-						},
-					},
-				],
-			},
+		new VitePlugin({
+			build: [
+				{ entry: "src/electron/main.ts", config: "vite.main.config.ts" },
+				{ entry: "src/electron/preload.ts", config: "vite.preload.config.ts" },
+			],
+			renderer: [{ name: "main_window", config: "vite.renderer.config.ts" }],
 		}),
 		// Fuses are used to enable/disable various Electron functionality
 		// at package time, before code signing the application

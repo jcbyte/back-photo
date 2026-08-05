@@ -4,7 +4,7 @@
 	"version": "3.1.0",
 	"description": "Application for backing up photos from your Android Device.",
 	"homepage": "https://github.com/jcbyte/BackPhoto",
-	"main": ".webpack/main",
+	"main": ".vite/build/main.js",
 	"scripts": {
 		"build:server": "pyinstaller --onefile --name server --distpath dist/backend backend/server.py",
 		"fetch:adb": "node scripts/fetch-adb.js",
@@ -12,8 +12,7 @@
 		"prepackage": "npm run build:server && npm run fetch:adb",
 		"package": "electron-forge package",
 		"make": "electron-forge make",
-		"publish": "electron-forge publish",
-		"lint": "eslint --ext .ts,.tsx ."
+		"publish": "electron-forge publish"
 	},
 	"keywords": [],
 	"author": {
@@ -29,7 +28,7 @@
 		"@electron-forge/maker-zip": "^7.8.3",
 		"@electron-forge/plugin-auto-unpack-natives": "^7.8.3",
 		"@electron-forge/plugin-fuses": "^7.8.3",
-		"@electron-forge/plugin-webpack": "^7.8.3",
+		"@electron-forge/plugin-vite": "^7.8.3",
 		"@electron-forge/publisher-github": "^7.8.3",
 		"@electron/fuses": "^1.8.0",
 		"@tailwindcss/postcss": "^4.1.12",
@@ -37,22 +36,12 @@
 		"@types/node": "^24.3.0",
 		"@types/react": "^19.1.11",
 		"@types/react-dom": "^19.1.7",
-		"@typescript-eslint/eslint-plugin": "^5.62.0",
-		"@typescript-eslint/parser": "^5.62.0",
-		"@vercel/webpack-asset-relocator-loader": "^1.7.3",
-		"css-loader": "^6.11.0",
+		"@vitejs/plugin-react": "^4.7.0",
 		"electron": "37.3.1",
-		"eslint": "^8.57.1",
-		"eslint-import-resolver-typescript": "^2.5.0",
-		"eslint-plugin-import": "^2.32.0",
-		"fork-ts-checker-webpack-plugin": "^7.3.0",
-		"node-loader": "^2.1.0",
 		"postcss": "^8.5.6",
-		"postcss-loader": "^8.1.1",
-		"style-loader": "^3.3.4",
 		"tailwindcss": "^4.1.12",
-		"ts-loader": "^9.5.4",
-		"typescript": "~4.5.4",
+		"typescript": "^5.9.3",
+		"vite": "^6.4.3",
 		"yauzl": "^3.2.0"
 	},
 	"dependencies": {
