@@ -19,6 +19,7 @@
   },
   "include": [
     "./src/**/*",
-    "./*.config.ts"
+    "./*.config.ts",
+    "./*.config.mts"
   ]
 }

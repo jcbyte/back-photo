@@ -23,10 +23,10 @@ Install dependencies:
 
 ```bash
 npm i
-pip install -r backend\requirements.txt
+uv pip sync backend/requirements.txt
 ```
 
-Start app:
+Start app in development:
 
 ```bash
 npm start
