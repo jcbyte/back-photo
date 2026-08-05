@@ -1,12 +1,14 @@
 import { app, BrowserWindow } from "electron";
+import squirrelStartup from "electron-squirrel-startup";
 import path from "path";
 import { DEV, setAppReady } from "./runtime";
+
 // Forge's Vite plugin defines these values for development and packaged builds.
 declare const MAIN_WINDOW_VITE_DEV_SERVER_URL: string | undefined;
 declare const MAIN_WINDOW_VITE_NAME: string;
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
-if (require("electron-squirrel-startup")) {
+if (squirrelStartup) {
 	app.quit();
 }
 
