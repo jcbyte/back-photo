@@ -27,7 +27,6 @@
  */
 
 import "@/index.css";
-import "@fontsource-variable/inter";
 
 import App from "@/App";
 import { BackendRunningProvider } from "@/hooks/BackendRunningProvider";
@@ -50,3 +49,4 @@ createRoot(rootElement).render(
 		</ThemeProvider>
 	</StrictMode>,
 );
+
