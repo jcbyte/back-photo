@@ -4,9 +4,9 @@ import path from "node:path";
 import { defineConfig } from "vite";
 
 export default defineConfig({
-	root: path.resolve(__dirname, "src/renderer"),
+	root: path.resolve(import.meta.dirname, "src/renderer"),
 	plugins: [react(), tailwindcss()],
 	resolve: {
-		alias: { "@": path.resolve(__dirname, "src/renderer") },
+		alias: { "@": path.resolve(import.meta.dirname, "src/renderer") },
 	},
 });

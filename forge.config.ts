@@ -30,8 +30,8 @@ const config: ForgeConfig = {
 		new AutoUnpackNativesPlugin({}),
 		new VitePlugin({
 			build: [
-				{ entry: "src/electron/main.ts", config: "vite.main.config.ts" },
-				{ entry: "src/electron/preload.ts", config: "vite.preload.config.ts" },
+				{ entry: "src/electron/main.ts", config: "vite.main.config.mts" },
+				{ entry: "src/electron/preload.ts", config: "vite.preload.config.mts" },
 			],
 			renderer: [{ name: "main_window", config: "vite.renderer.config.mts" }],
 		}),
