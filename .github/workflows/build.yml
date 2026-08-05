@@ -15,16 +15,19 @@ jobs:
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
+        with:
+          node-version: '22.x'
+
+      - name: Install Node Dependencies
+        run: npm install
 
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: "3.12"
 
-      - name: Install Dependencies
-        run: |
-          npm install
-          pip install -r backend/requirements.txt
+      - name: Install Python Dependencies
+        run: pip install -r backend/requirements.txt
 
       - name: Prepackage
         run: npm run prepackage

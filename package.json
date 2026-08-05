@@ -21,6 +21,9 @@
 	},
 	"icon": "./assets/icon.png",
 	"license": "Apache-2.0",
+	"engines": {
+		"node": "22.x"
+	},
 	"dependencies": {
 		"@fontsource-variable/geist": "^5.3.0",
 		"class-variance-authority": "^0.7.1",
@@ -37,7 +40,8 @@
 		"sonner": "^2.0.7",
 		"tailwind-merge": "^3.6.0",
 		"tree-kill": "^1.2.2",
-		"tw-animate-css": "^1.4.0"
+		"tw-animate-css": "^1.4.0",
+		"yauzl": "^3.4.0"
 	},
 	"devDependencies": {
 		"@electron-forge/cli": "^7.11.2",
@@ -58,7 +62,6 @@
 		"electron": "43.3.0",
 		"tailwindcss": "^4.3.3",
 		"typescript": "^6.0.3",
-		"vite": "^8.2.0",
-		"yauzl": "^3.4.0"
+		"vite": "^8.2.0"
 	}
 }
