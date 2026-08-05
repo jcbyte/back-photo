@@ -42,7 +42,7 @@ export default function App() {
 		setProgress(0);
 
 		const res = await backendApi.backup((update) => {
-			if (update.progress) setProgress(update.progress);
+			if (update.progress !== undefined) setProgress(update.progress);
 			if (update.log) addLog(update.log);
 		}, sourcePath);
 
