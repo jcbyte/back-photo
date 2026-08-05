@@ -84,7 +84,7 @@ ipcMain.handle("backend.getDevices", async (): Promise<BackendResponse<AdbDevice
 
 let backupEs: EventSource | null = null;
 
-ipcMain.handle("backend.backup", async (event): Promise<BackendResponse> => {
+ipcMain.handle("backend.backup", async (event, sourcePath?: string): Promise<BackendResponse> => {
 	const apiUrl = getBackendHost();
 	if (!apiUrl) return { ok: false, detail: "Unknown backend host - Was tha backend started?", backendError: "backend" };
 
@@ -99,7 +99,7 @@ ipcMain.handle("backend.backup", async (event): Promise<BackendResponse> => {
 			headers: {
 				"Content-Type": "application/json",
 			},
-			body: JSON.stringify({ config: userConfig }),
+			body: JSON.stringify({ config: userConfig, sourcePath }),
 		});
 		data = (await res.json().catch(() => ({}))) as ExpectedResponse | BackendApiError; // `catch` fallback if JSON invalid
 

@@ -37,14 +37,14 @@ export default function App() {
 		setLogs((prev) => [log as LogEntry, ...prev]);
 	}
 
-	async function callBackup() {
+	async function callBackup(sourcePath?: string) {
 		setIsRunning(true);
 		setProgress(0);
 
 		const res = await backendApi.backup((update) => {
 			if (update.progress) setProgress(update.progress);
 			if (update.log) addLog(update.log);
-		});
+		}, sourcePath);
 
 		if (!res.ok) {
 			if (res.backendError) {

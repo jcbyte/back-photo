@@ -6,16 +6,19 @@ import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useUserConfig } from "@/hooks/UserConfigProvider";
 import Loading from "@/pages/Loading";
 import {
 	CircleAlertIcon,
 	CircleCheckIcon,
+	FolderIcon,
 	FolderOpen,
 	LoaderCircleIcon,
 	LogsIcon,
 	Play,
 	RefreshCw,
+	SmartphoneIcon,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -28,7 +31,7 @@ export default function Home({
 	refreshDevices,
 }: {
 	isRunning: boolean;
-	backup: () => void;
+	backup: (sourcePath?: string) => void;
 	logs: LogEntry[];
 	progress: number;
 	devices: AdbDevice[];
@@ -37,6 +40,8 @@ export default function Home({
 	const { userConfig, updateUserConfig } = useUserConfig();
 
 	const [refreshingDevices, setRefreshingDevices] = useState<boolean>(false);
+	const [sourceType, setSourceType] = useState<"phone" | "folder">("phone");
+	const [sourcePath, setSourcePath] = useState("");
 
 	async function handleRefreshDevices() {
 		if (isRunning) return;
@@ -46,16 +51,23 @@ export default function Home({
 		setRefreshingDevices(false);
 	}
 
-	async function selectFolder() {
+	async function selectDestinationFolder() {
 		const folderPath = await electronApi.pickFolder();
 		if (!folderPath) return;
 
 		updateUserConfig({ destinationPath: folderPath });
 	}
 
+	async function selectSourceFolder() {
+		const folderPath = await electronApi.pickFolder();
+		if (!folderPath) return;
+
+		setSourcePath(folderPath);
+	}
+
 	useEffect(() => {
 		let refreshInterval: NodeJS.Timeout | null = null;
-		if (!isRunning) {
+		if (!isRunning && sourceType === "phone") {
 			refreshDevices();
 			refreshInterval = setInterval(refreshDevices, 2000);
 		}
@@ -63,11 +75,15 @@ export default function Home({
 		return () => {
 			if (refreshInterval) clearInterval(refreshInterval);
 		};
-	}, [isRunning]);
+	}, [isRunning, sourceType]);
 
 	if (!userConfig) {
 		return <Loading />;
 	}
+
+	const selectedDeviceIsAuthorised = devices.find((device) => device.serial === userConfig.adbDevice)?.authorised;
+	const sameLocalFolders = sourcePath.trim().toLowerCase() === userConfig.destinationPath.trim().toLowerCase();
+	const validSource = sourceType === "phone" ? selectedDeviceIsAuthorised : sourcePath.trim() && !sameLocalFolders;
 
 	return (
 		<div className="container mx-auto p-6 flex flex-col gap-4">
@@ -79,15 +95,23 @@ export default function Home({
 
 			<div className="flex flex-col items-stretch gap-3">
 				<div className="flex gap-3">
-					{/* Device Selection & Controls */}
+					{/* Source Selection & Controls */}
 					<Card className="min-w-96">
 						<CardHeader>
-							<CardTitle>Device Selection</CardTitle>
+							<CardTitle>Back Up From</CardTitle>
 						</CardHeader>
 						<CardContent>
 							<div className="flex flex-col gap-4">
 								<div className="flex flex-col gap-2">
-									<div className="flex gap-2">
+									<Tabs value={sourceType} onValueChange={(value) => setSourceType(value as "phone" | "folder")}>
+										<TabsList className="grid w-full grid-cols-2">
+											<TabsTrigger value="phone" disabled={isRunning}><SmartphoneIcon /> Phone</TabsTrigger>
+											<TabsTrigger value="folder" disabled={isRunning}><FolderIcon /> PC Folder</TabsTrigger>
+										</TabsList>
+
+										<TabsContent value="phone" className="flex flex-col">
+										<label className="text-sm font-semibold">Phone Device</label>
+										<div className="flex gap-2">
 										<Select
 											value={userConfig.adbDevice}
 											onValueChange={(selected) => updateUserConfig({ adbDevice: selected })}
@@ -135,7 +159,20 @@ export default function Home({
 										>
 											<RefreshCw className={`h-4 w-4 ${refreshingDevices && "animate-spin"}`} />
 										</Button>
-									</div>
+										</div>
+										</TabsContent>
+
+										<TabsContent value="folder" className="flex flex-col">
+											<label className="text-sm font-semibold">Source Folder</label>
+											<div className="flex gap-2">
+												<Input className="flex-1" placeholder="D:\\Unsorted Photos" value={sourcePath} onChange={(event) => setSourcePath(event.target.value)} disabled={isRunning} />
+												<Button variant="outline" size="icon" onClick={selectSourceFolder} disabled={isRunning}>
+													<FolderOpen className="h-4 w-4" />
+												</Button>
+											</div>
+											{sameLocalFolders && sourcePath.trim() && <span className="text-sm text-destructive">Source and destination must be different.</span>}
+										</TabsContent>
+									</Tabs>
 
 									<div className="flex flex-col">
 										<label className="text-sm font-semibold">Destination Path</label>
@@ -147,7 +184,7 @@ export default function Home({
 												onChange={(e) => updateUserConfig({ destinationPath: e.target.value })}
 												disabled={isRunning}
 											/>
-											<Button variant="outline" size="icon" onClick={selectFolder} disabled={isRunning}>
+											<Button variant="outline" size="icon" onClick={selectDestinationFolder} disabled={isRunning}>
 												<FolderOpen className="h-4 w-4" />
 											</Button>
 										</div>
@@ -156,13 +193,13 @@ export default function Home({
 
 								<Button
 									disabled={
-										!devices.find((device) => device.serial === userConfig.adbDevice)?.authorised ||
+										!validSource ||
 										!userConfig.destinationPath.trim() ||
 										isRunning
 									}
 									className="w-full"
 									size="lg"
-									onClick={backup}
+									onClick={() => backup(sourceType === "folder" ? sourcePath : undefined)}
 								>
 									{isRunning ? <LoaderCircleIcon className="h-4 w-4 animate-spin" /> : <Play className="h-4 w-4" />}
 									Back Up
